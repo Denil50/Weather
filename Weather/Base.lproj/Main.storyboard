@@ -23,10 +23,10 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fm4-zh-ETt">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="106"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="106.33333333333333"/>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hyM-uE-gDU">
-                                        <rect key="frame" x="0.0" y="107" width="414" height="112.33333333333331"/>
+                                        <rect key="frame" x="0.0" y="107.33333333333331" width="414" height="112"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="dbm-yy-kpO">
                                                 <rect key="frame" x="0.0" y="15.666666666666671" width="414" height="81"/>
@@ -42,7 +42,7 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Vronezh" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5IQ-28-DO2">
-                                                        <rect key="frame" x="137" y="31.999999999999986" width="140" height="49"/>
+                                                        <rect key="frame" x="137" y="32" width="140" height="49"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="140" id="HWU-3c-vF3"/>
                                                             <constraint firstAttribute="height" constant="49" id="QA6-EQ-wiy"/>
@@ -126,21 +126,42 @@
                                     </view>
                                 </subviews>
                             </stackView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vgE-a8-GEA" customClass="NVActivityIndicatorView" customModule="NVActivityIndicatorView">
+                                <rect key="frame" x="172" y="333" width="70" height="70"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="70" id="Xm8-Z7-zht"/>
+                                    <constraint firstAttribute="width" constant="70" id="cMj-iu-vYh"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="padding">
+                                        <real key="value" value="20"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="color">
+                                        <color key="value" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="typeName" value="lineScale"/>
+                                </userDefinedRuntimeAttributes>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="qYL-2J-LWC" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="1Om-hJ-On0"/>
+                            <constraint firstItem="vgE-a8-GEA" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="5B3-9b-50H"/>
                             <constraint firstItem="qYL-2J-LWC" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Aks-HB-rkv"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="gsb-PL-ydp" secondAttribute="bottom" id="Do2-Mg-bEo"/>
                             <constraint firstItem="gsb-PL-ydp" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Q1o-YF-LXg"/>
+                            <constraint firstItem="vgE-a8-GEA" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="XZr-9J-kVy"/>
                             <constraint firstItem="gsb-PL-ydp" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="c9y-Fn-HjN"/>
-                            <constraint firstItem="qYL-2J-LWC" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="dma-EP-GCI"/>
-                            <constraint firstItem="qYL-2J-LWC" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="jSa-0K-o1e"/>
+                            <constraint firstItem="qYL-2J-LWC" firstAttribute="bottom" secondItem="8bC-Xf-vdC" secondAttribute="bottom" id="dma-EP-GCI"/>
+                            <constraint firstItem="qYL-2J-LWC" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="jSa-0K-o1e"/>
                             <constraint firstItem="gsb-PL-ydp" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="pTo-7p-7YN"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="vgE-a8-GEA" id="29V-TV-w5f"/>
                         <outlet property="backgroundImageView" destination="qYL-2J-LWC" id="p13-gw-zkp"/>
                         <outlet property="conditionImageView" destination="qiW-E6-vqT" id="Qpy-cy-NgD"/>
                         <outlet property="conditionLabel" destination="6uP-eh-8IP" id="79Y-x5-3o0"/>

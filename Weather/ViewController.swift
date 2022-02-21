@@ -6,17 +6,20 @@
 //
 
 import UIKit
-import Alamofire
-import SwiftyJSON
 import NVActivityIndicatorView
 import CoreLocation
 import Foundation
 
-class ViewController: UIViewController, CLLocationManagerDelegate {
+class ViewController: UIViewController {
 
-    
+    // MARK: - Private Static Propeties
+
+    private static let voronezhCoordinates = CLLocationCoordinate2D(latitude: 51.6720400, longitude:  39.1843000)
+
+    // MARK: - Subviews
+
     @IBOutlet weak var backgroundImageView: UIImageView!
-    
+
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var dayLabel: UILabel!
     
@@ -24,73 +27,100 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     @IBOutlet weak var conditionLabel: UILabel!
     
     @IBOutlet weak var temperatureLabel: UILabel!
-    
-    
-    let apiKey: String = "b88b66e74f0e38b26476e65be6b09b2d"
-    
-    // Lat. and Lon Voronezh
-    var lat = 51.6720400
-    var lon = 39.1843000
-    
-    var activityIndicator: NVActivityIndicatorView!
-    let locationManager = CLLocationManager()
-    
-    
+    @IBOutlet weak var activityIndicator: NVActivityIndicatorView!
+
+    // MARK: - Private Propeties
+
+    private let weatherService = WeatherService()
+    private let locationManager = CLLocationManager()
+
+    // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let indicatorSize: CGFloat = 70
-        let indicatorFrame = CGRect(x: (view.frame.width-indicatorSize)/2, y: (view.frame.height)/2, width: indicatorSize, height: indicatorSize)
-        activityIndicator = NVActivityIndicatorView(frame: indicatorFrame, type: .lineScale, color: UIColor.white, padding: 20.0)
-        activityIndicator.backgroundColor = UIColor.black
-        view.addSubview(activityIndicator)
-        
+
+        activityIndicator.backgroundColor = .black
+
+        locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
-        
+        locationManager.startMonitoringSignificantLocationChanges()
+
+        let location = CLLocation(
+            latitude: Self.voronezhCoordinates.latitude,
+            longitude: Self.voronezhCoordinates.longitude
+        )
+        startUpdatingWeather(for: location)
+    }
+
+}
+
+// MARK: - Private Methods
+
+private extension ViewController {
+
+    func startUpdatingWeather(for location: CLLocation) {
+        let request = WeatherService.WeatherRequest(
+            latitude: location.coordinate.latitude,
+            lontidude: location.coordinate.longitude
+        )
+
         activityIndicator.startAnimating()
-        if(CLLocationManager.locationServicesEnabled()){
-            locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            locationManager.startUpdatingLocation()
-        }
-        
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let location = locations[0]
-        lat = location.coordinate.latitude
-        lon = location.coordinate.longitude
-        Alamofire.request("http://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=\(apiKey)&units=metric").responseJSON {
-            response in
-            self.activityIndicator.stopAnimating()
-            if let responseStr = response.result.value {
-                let jsonResponse = JSON(responseStr)
-                let jsonWeather = jsonResponse["weather"].array![0]
-                let jsonTemp = jsonResponse["main"]
-                let iconName = jsonWeather["icon"].stringValue
-                
-                self.locationLabel.text = jsonResponse["name"].stringValue
-                self.conditionImageView.image = UIImage(named: iconName)
-                self.conditionLabel.text = jsonWeather["main"].stringValue
-                self.temperatureLabel.text = "\(Int(round(jsonTemp["temp"].doubleValue)))"
-                
-                let date = Date()
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "EEEE"
-                self.dayLabel.text = dateFormatter.string(from: date)
-                
-                let suffix = iconName.suffix(1)
-                if (suffix == "n") {
-                    self.backgroundImageView.image = #imageLiteral(resourceName: "b")
-                } else {
-                    self.backgroundImageView.image = #imageLiteral(resourceName: "w")
-                }
+        weatherService.weather(for: request, completionHandler: { [weak self] result in
+            DispatchQueue.main.async { [weak self] in
+                self?.activityIndicator.stopAnimating()
             }
-        }
-        self.locationManager.stopUpdatingLocation()
+
+            switch result {
+            case .success(let weather):
+                DispatchQueue.main.async { [weak self] in
+                    self?.updateWeather(weather: weather)
+                }
+            case .failure(let error):
+                print(error)
+            }
+        })
     }
-    
+
+    func updateWeather(weather: WeatherService.WeatherResult) {
+        locationLabel.text = weather.name
+        temperatureLabel.text = weather.main.temp.formatted(.number.precision(.fractionLength(0)))
+
+        let date = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "EEEE"
+        dayLabel.text = dateFormatter.string(from: date)
+
+        guard let firstWeather = weather.weather.first else {
+            return
+        }
+
+        conditionLabel.text = firstWeather.main
+        conditionImageView.image = UIImage(named: firstWeather.icon)
+
+        let suffix = firstWeather.icon.suffix(1)
+        if (suffix == "n") {
+            backgroundImageView.image = #imageLiteral(resourceName: "b")
+        } else {
+            backgroundImageView.image = #imageLiteral(resourceName: "w")
+        }
+    }
+
+}
+
+// MARK: - CLLocationManagerDelegate
+
+extension ViewController: CLLocationManagerDelegate {
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else {
+            return
+        }
+
+        startUpdatingWeather(for: location)
+    }
+
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print(error.localizedDescription)
     }
+
 }
